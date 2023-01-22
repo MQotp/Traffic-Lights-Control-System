@@ -1,0 +1,95 @@
+/*
+ * button.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+
+#include "button.h"
+
+volatile uint8 g_trafficMode = 0;
+
+ISR(INT0_vect)
+{
+	g_test ^= 1;
+	/*Delay in ISR Code is not a very good practice with interrupts, but it makes it easier here.*/
+	_delay_ms(250); /*Nothing to be done in case of long press.*/
+	if(button_Is_Pressed(PORTD_ID,PIN2))
+	{
+		g_trafficMode = NORMAL_MODE;
+	}
+	else
+	{
+		if (g_press == 0)
+		{
+			g_trafficMode = PEDESTRIAN_MODE;
+			g_press = 1;
+		}
+	}
+}
+
+/*
+ * Description :
+ * Function to Initialize button.
+ * It depends on DIO driver, as it take port number and pin number, then activate the required pin as input pin.
+ */
+void button_init(uint8 port_number, uint8 pin_number)
+{
+	DIO_setupPinDirection(port_number, pin_number, PIN_INPUT);
+}
+
+/*
+ * Description :
+ * Function to check if the button is pressed.
+*/
+uint8 button_Is_Pressed(uint8 port_number, uint8 pin_number)
+{
+	switch(port_number)
+	{
+	case 0:
+		if(BIT_IS_SET(PINA,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	case 1:
+		if(BIT_IS_SET(PINB,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	case 2:
+		if(BIT_IS_SET(PINC,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	case 3:
+		if(BIT_IS_SET(PIND,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	}
+	return BUTTON_IS_NOT_PRESSED;
+}
+
+/*
+ * Description :
+ * Function to test button driver.
+ * It uses every function implemented in the driver to check that it works correctly.
+ */
+void button_test(void)
+{
+	button_init(PORTD_ID,PIN2);
+	DIO_setupPinDirection(PORTA_ID,PIN0,LOGIC_HIGH);
+	if(button_Is_Pressed(PORTD_ID,PIN2))
+	{
+		DIO_writePin(PORTA_ID,PIN0,LOGIC_HIGH);
+	}
+	else
+	{
+		DIO_writePin(PORTA_ID,PIN0,LOGIC_LOW);
+	}
+}

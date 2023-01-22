@@ -1,0 +1,13 @@
+/*
+ * interrupts.h
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+#ifndef MCAL_INTERRUPTS_INTERRUPTS_H_
+#define MCAL_INTERRUPTS_INTERRUPTS_H_
+
+
+
+#endif /* MCAL_INTERRUPTS_INTERRUPTS_H_ */

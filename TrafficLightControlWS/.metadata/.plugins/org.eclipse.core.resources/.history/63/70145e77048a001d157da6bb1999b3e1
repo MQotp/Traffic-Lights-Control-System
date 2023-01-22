@@ -1,0 +1,14 @@
+/*
+ * button.h
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+#ifndef ECUAL_BUTTON_BUTTON_H_
+#define ECUAL_BUTTON_BUTTON_H_
+
+#define BUTTON_IS_NOT_PRESSED 0
+#define BUTTON_IS_PRESSED 1
+
+#endif /* ECUAL_BUTTON_BUTTON_H_ */

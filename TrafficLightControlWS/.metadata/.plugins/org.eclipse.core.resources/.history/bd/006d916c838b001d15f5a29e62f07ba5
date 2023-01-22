@@ -1,0 +1,47 @@
+/*
+ * button.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+
+#include "button.h"
+
+void button_init(uint8 port_number, uint8 pin_number)
+{
+	DIO_setupPinDirection(port_number, pin_number, PIN_INPUT);
+}
+
+uint8 button_Is_Pressed(uint8 port_number, uint8 pin_number)
+{
+	switch(port_number)
+	{
+	case 0:
+		if(BIT_IS_SET(PINA,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	case 1:
+		if(BIT_IS_SET(PINB,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	case 2:
+		if(BIT_IS_SET(PINC,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	case 3:
+		if(BIT_IS_SET(PIND,pin_number))
+		{
+			return BUTTON_IS_PRESSED;
+		}
+		break;
+	}
+
+	return BUTTON_IS_NOT_PRESSED;
+}

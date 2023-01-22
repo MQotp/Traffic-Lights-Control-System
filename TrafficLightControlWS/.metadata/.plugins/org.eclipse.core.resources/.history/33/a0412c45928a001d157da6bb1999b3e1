@@ -1,0 +1,33 @@
+/*
+ * app.h
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+#ifndef APPLICATION_APP_H_
+#define APPLICATION_APP_H_
+
+/*******************************************************************************
+ *				                     Includes         	       	               *
+ *******************************************************************************/
+
+#include "../Utilities/reg.h"
+#include "../Utilities/common_macros.h"
+#include "../Utilities/std_types.h"
+#include "../MCAL/DIO/dio.h"
+#include "../MCAL/INTERRUPTS/interrupts.h"
+#include "../MCAL/TIMER1/timer1.h"
+#include "../ECUAL/BUTTON/button.h"
+#include "../ECUAL/LED/led.h"
+
+#define NORMAL_MODE 0
+#define PEDESTRIAN_MODE 1
+
+
+void app_Init(void);
+
+void app_Start(void);
+
+
+#endif /* APPLICATION_APP_H_ */

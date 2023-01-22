@@ -1,0 +1,19 @@
+/*
+ * button.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+
+#include "../../MCAL/DIO/dio.h"
+
+void button_init(uint8 port_number, uint8 pin_number)
+{
+
+}
+
+uint8 button_Is_Pressed(uint8 port_number, uint8 pin_number)
+{
+
+}

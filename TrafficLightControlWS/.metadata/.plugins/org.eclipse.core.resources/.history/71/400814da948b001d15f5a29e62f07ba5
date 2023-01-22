@@ -1,0 +1,16 @@
+/*
+ * main.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+#include "Application/app.h"
+
+int main(void)
+{
+	app_Init();
+	while(1)
+	{
+		app_Start();
+	}
+}

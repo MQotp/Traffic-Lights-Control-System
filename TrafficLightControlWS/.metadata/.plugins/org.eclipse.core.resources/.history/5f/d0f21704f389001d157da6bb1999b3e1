@@ -1,0 +1,47 @@
+/*
+ * dio.h
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+#ifndef MCAL_DIO_DIO_H_
+#define MCAL_DIO_DIO_H_
+
+ /******************************************************************************
+ *                                    Includes                                 *
+ *******************************************************************************/
+#include "../../Utilities/common_macros.h"
+#include "../../Utilities/std_types.h"
+
+
+ /******************************************************************************
+ *                               Types Declaration                             *
+ *******************************************************************************/
+typedef enum
+{
+	PIN_INPUT, PIN_OUTPUT
+}GPIO_PinDirectionType;
+
+typedef enum
+{
+	PORT_INPUT, PORT_OUTPUT = 0xFF
+}GPIO_PortDirectionType;
+
+/*******************************************************************************
+*                              Functions Prototypes                           *
+*******************************************************************************/
+
+void DIO_setupPinDirection(uint8 port_number, uint8 pin_number, uint8 direction);
+
+void DIO_writePin(uint8 port_number, uint8 pin_number, uint8 value);
+
+uint8 DIO_readPin(uint8 port_number, uint8 pin_number);
+
+void DIO_setupPortDirection(uint8 port_number, GPIO_PortDirectionType direction);
+
+void DIO_writePort(uint8 port_number, uint8 value);
+
+uint8 DIO_readPort(uint8 port_number);
+
+#endif /* MCAL_DIO_DIO_H_ */

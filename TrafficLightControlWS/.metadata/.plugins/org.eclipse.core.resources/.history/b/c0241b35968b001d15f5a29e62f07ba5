@@ -1,0 +1,32 @@
+/*
+ * main.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+#include "Application/app.h"
+
+/*int main(void)
+{
+	app_Init();
+	while(1)
+	{
+		app_Start();
+	}
+}*/
+
+int main(void)
+{
+	/*Test main*/
+	LED_init(PORTA_ID,PIN0);
+	button_init(PORTD_ID,PIN2);
+	INT0_init();
+	Timer1_init();
+	while(1)
+	{
+		//DIO_test();
+		//button_test();
+		//LED_test();
+		timer_interrupts_test();
+	}
+}

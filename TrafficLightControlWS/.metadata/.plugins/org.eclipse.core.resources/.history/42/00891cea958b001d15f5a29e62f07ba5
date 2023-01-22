@@ -1,0 +1,221 @@
+/*
+ * app.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+#include "app.h"
+#include <util/delay.h>
+/*******************************************************************************
+ *                		      Global Variables                                 *
+ *******************************************************************************/
+volatile uint8 g_trafficMode = 0;
+volatile uint8 g_ticks = 1;
+volatile uint8 g_press = 0, g_test = 0;
+
+/*******************************************************************************
+ *                       Interrupt Service Routines                            *
+ *******************************************************************************/
+ISR(INT0_vect)
+{
+	g_test ^= 1;
+	/*Delay in ISR Code is not a very good practice with interrupts, but it makes it easier here.*/
+	_delay_ms(250); /*Nothing to be done in case of long press.*/
+	if(button_Is_Pressed(PORTD_ID,PIN2))
+	{
+		g_trafficMode = NORMAL_MODE;
+	}
+	else
+	{
+		if (g_press == 0)
+		{
+			g_trafficMode = PEDESTRIAN_MODE;
+			g_press = 1;
+		}
+	}
+}
+
+/*******************************************************************************
+ *                      Functions Definitions                                  *
+ *******************************************************************************/
+void timer_interrupts_test(void)
+{
+	LED_ON(PORTA_ID,PIN0);
+	g_ticks = 0;
+	while(g_ticks < 3); 			/*Timer interrupt check*/
+	LED_OFF(PORTA_ID,PIN0);
+
+	if(g_test)
+	{
+		LED_ON(PORTA_ID,PIN0);
+	}
+	else
+	{
+		LED_OFF(PORTA_ID,PIN0);
+	}
+
+}
+
+void callBackFunc(void)
+{
+	g_ticks++;
+}
+
+void app_Init(void)
+{
+					/*CARS LEDs*/
+	LED_init(PORTA_ID,PIN0);
+	LED_init(PORTA_ID,PIN1);
+	LED_init(PORTA_ID,PIN2);
+
+				/*PEDESTRIANS LEDs*/
+	LED_init(PORTB_ID,PIN0);
+	LED_init(PORTB_ID,PIN1);
+	LED_init(PORTB_ID,PIN2);
+
+	button_init(PORTD_ID,PIN2);		/*Button Initialization*/
+
+	Timer1_init();					/*Timer 1 Initialization*/
+
+	Timer1_setCallBack(callBackFunc); /*Setting Call Back Function*/
+
+	INT0_init();					/*Function to trigger INT0 with the rising edge.*/
+
+}
+
+void app_Start(void)
+{
+	uint8 flag = 0;
+	g_ticks = 0;
+						/*NORMAL MODE*/
+	while(g_trafficMode == NORMAL_MODE)
+	{
+		LED_OFF(PORTA_ID,PIN0);
+		LED_OFF(PORTA_ID,PIN1);
+		LED_OFF(PORTA_ID,PIN2);
+		LED_OFF(PORTB_ID,PIN0);
+		LED_OFF(PORTB_ID,PIN1);
+		LED_OFF(PORTB_ID,PIN2);
+
+		if(g_ticks < NUMBER_OF_SECONDS)
+		{
+			LED_ON(PORTA_ID,PIN0);
+			LED_ON(PORTB_ID,PIN2);
+			_delay_ms(10);
+		}
+
+		else if (g_ticks < (2 * NUMBER_OF_SECONDS))
+		{
+			flag ^= 1;
+			if(!flag)
+			{
+				LED_ON(PORTA_ID,PIN1);
+				LED_ON(PORTB_ID,PIN1);
+				_delay_ms(10);
+			}
+			else
+			{
+				LED_OFF(PORTA_ID,PIN1);
+				LED_OFF(PORTB_ID,PIN1);
+			}
+			_delay_ms(250);
+		}
+
+		else if (g_ticks < (3 * NUMBER_OF_SECONDS))
+		{
+			LED_ON(PORTA_ID,PIN2);
+			LED_ON(PORTB_ID,PIN0);
+			_delay_ms(10);
+		}
+
+		else if(g_ticks < (4 * NUMBER_OF_SECONDS))
+		{
+			flag ^= 1;
+			if(!flag)
+			{
+				LED_ON(PORTA_ID,PIN1);
+				LED_ON(PORTB_ID,PIN1);
+				_delay_ms(10);
+			}
+			else
+			{
+				LED_OFF(PORTA_ID,PIN1);
+				LED_OFF(PORTB_ID,PIN1);
+			}
+			_delay_ms(250);
+		}
+		if(g_ticks >= 20)
+		{
+			g_ticks = 0;
+		}
+		if(g_trafficMode == PEDESTRIAN_MODE)
+		{
+			break;
+		}
+	}
+
+						/*PEDESTRIAN MODE*/
+	while(g_trafficMode == PEDESTRIAN_MODE)
+	{
+		/*Sequential Way to go.*/
+		if(LED_IS_ON(PORTA_ID,PIN2)) /*RED LED of Cars is ON.*/
+		{
+			LED_ON(PORTA_ID,PIN2);
+			LED_ON(PORTB_ID,PIN0);
+			g_ticks = 0;
+			while(g_ticks < 5);
+		}
+		else
+		{
+
+			LED_ON(PORTB_ID,PIN2); /*RED LED of Pedestrian*/
+			while(!(g_ticks % 5)); /*continue to the nearest end of phase*/
+			LED_OFF(PORTA_ID,PIN0);/*Close the GREEN LED of cars.*/
+			LED_OFF(PORTB_ID,PIN2);
+			/*Toggle YELLOW LEDs for 5 seconds.*/
+			g_ticks = 0;
+			while(g_ticks < 5)
+			{
+				LED_TOGGLE(PORTA_ID,PIN1);
+				LED_TOGGLE(PORTB_ID,PIN1);
+				_delay_ms(200);
+			}
+			LED_OFF(PORTA_ID,PIN1);
+			LED_OFF(PORTB_ID,PIN1);
+			/*RED LED of Cars and GREEN LED of Pedestrian are ON.*/
+			LED_ON(PORTA_ID,PIN2);
+			LED_ON(PORTB_ID,PIN0);
+			g_ticks = 0;
+			while(g_ticks < 5);
+		}
+
+		LED_OFF(PORTA_ID,PIN2);/*Turn RED LED of Cars OFF*/
+		g_ticks = 0;
+		while(g_ticks < 5)
+		{
+			LED_TOGGLE(PORTA_ID,PIN1);
+			LED_TOGGLE(PORTB_ID,PIN1);
+			_delay_ms(200);
+		}
+		/*Turn YELLOW LEDs OFF*/
+		LED_OFF(PORTA_ID,PIN1);
+		LED_OFF(PORTB_ID,PIN1);
+		LED_OFF(PORTB_ID,PIN0); /*Turn GREEN LED of Pedestrian OFF*/
+
+		LED_ON(PORTB_ID,PIN2);
+		LED_ON(PORTA_ID,PIN0);
+		g_ticks = 0;
+		while(g_ticks < 5);
+
+		/*Turn all LEDs OFF to start Normal Mode Again*/
+		LED_OFF(PORTB_ID,PIN0);
+		LED_OFF(PORTB_ID,PIN1);
+		LED_OFF(PORTB_ID,PIN2);
+		LED_OFF(PORTA_ID,PIN0);
+		LED_OFF(PORTA_ID,PIN1);
+		LED_OFF(PORTA_ID,PIN2);
+		g_trafficMode = NORMAL_MODE;
+		g_press = 0;
+	}
+}

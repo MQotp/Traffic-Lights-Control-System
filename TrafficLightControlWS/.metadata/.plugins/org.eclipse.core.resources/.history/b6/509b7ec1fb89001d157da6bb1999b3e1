@@ -1,0 +1,15 @@
+/*
+ * interrupts.c
+ *
+ *  Created on: Jan 1, 2023
+ *      Author: Mahmoud Qotp
+ */
+
+#include "../../Utilities/reg.h"
+#include "interrupts.h"
+
+void interrupt_init(void)
+{
+	GICR |= (1 << INT0);
+	SREG |= (1 << 7); // I-Bit
+}
